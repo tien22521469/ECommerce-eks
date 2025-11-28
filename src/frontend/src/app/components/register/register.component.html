@@ -1,0 +1,73 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-center mb-4">Create Account</h2>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="mb-3">
+              <label for="fullName" class="form-label">Full Name</label>
+              <input
+                id="fullName"
+                type="text"
+                class="form-control"
+                formControlName="fullName"
+                placeholder="Jane Doe"
+              />
+              <div *ngIf="hasError('fullName', 'required')" class="text-danger small">
+                Full Name is required.
+              </div>
+              <div *ngIf="hasError('fullName', 'minlength')" class="text-danger small">
+                Full Name must be at least 2 characters.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                placeholder="name@example.com"
+              />
+              <div *ngIf="hasError('email', 'required')" class="text-danger small">
+                Email is required.
+              </div>
+              <div *ngIf="hasError('email', 'email')" class="text-danger small">
+                Please enter a valid email.
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input
+                id="password"
+                type="password"
+                class="form-control"
+                formControlName="password"
+                placeholder="••••••••"
+              />
+              <div *ngIf="hasError('password', 'required')" class="text-danger small">
+                Password is required.
+              </div>
+              <div *ngIf="hasError('password', 'minlength')" class="text-danger small">
+                Password must be at least 6 characters.
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="registerForm.invalid || submitting"
+            >
+              {{ submitting ? 'Creating account...' : 'Register' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

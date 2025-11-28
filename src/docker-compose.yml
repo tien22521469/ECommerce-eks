@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ecommerce_db
+      MYSQL_USER: ecommerceapp
+      MYSQL_PASSWORD: StrongPa55WorD
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./01-starter-files_db-scripts/02-create-products.sql:/docker-entrypoint-initdb.d/02-create-products.sql
+      - ./01-starter-files_db-scripts/03-refresh-database-with-100-products.sql:/docker-entrypoint-initdb.d/03-refresh-database-with-100-products.sql
+      - ./01-starter-files_db-scripts/04-countries-and-states.sql:/docker-entrypoint-initdb.d/04-countries-and-states.sql
+      - ./01-starter-files_db-scripts/05-create-order-tables.sql:/docker-entrypoint-initdb.d/05-create-order-tables.sql
+      - ./01-starter-files_db-scripts/06-create-users-tables.sql:/docker-entrypoint-initdb.d/06-create-users-tables.sql
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/ecommerce_db
+      SPRING_DATASOURCE_USERNAME: ecommerceapp
+      SPRING_DATASOURCE_PASSWORD: StrongPa55WorD
+    ports:
+      - "8081:8081"
+
+  product-service:
+    build:
+      context: ./product-service
+    container_name: product-service
+    depends_on:
+      - mysql-db
+      - user-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/ecommerce_db
+      SPRING_DATASOURCE_USERNAME: ecommerceapp
+      SPRING_DATASOURCE_PASSWORD: StrongPa55WorD
+      USER_SERVICE_URL: http://user-service:8081/api/users/validate
+    ports:
+      - "8082:8082"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    depends_on:
+      - user-service
+      - product-service
+    ports:
+      - "80:80"
+
+volumes:
+  mysql-data:
+
