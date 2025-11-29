@@ -51,6 +51,8 @@ pipeline {
             steps {
                 script {
                     echo '--- Updating ConfigMap for SQL Scripts ---'
+                    aws eks update-kubeconfig --region ap-southeast-1 --name my-demo-cluster
+                    sh "kubectl get svc"
                     // Xử lý ConfigMap
                     sh "kubectl delete configmap mysql-init-scripts --ignore-not-found"
                     sh "kubectl create configmap mysql-init-scripts --from-file=${DB_SCRIPTS_PATH}/"
