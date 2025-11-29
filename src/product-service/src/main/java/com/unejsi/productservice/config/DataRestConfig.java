@@ -47,8 +47,12 @@ public class DataRestConfig implements RepositoryRestConfigurer {
         exposeIds(config);
 
 
-        //configgure cors mapping
-        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(allowedOrigins);
+        cors.addMapping(config.getBasePath() + "/**") // Áp dụng cho mọi đường dẫn
+            .allowedOrigins("*")  // Cho phép TẤT CẢ các trang web gọi vào (Dễ nhất để demo)
+            // Hoặc nếu muốn bảo mật thì paste cái link Frontend LoadBalancer vào:
+            // .allowedOrigins("http://a07961fe748704c97b45174ce330cc42-969445350.ap-southeast-1.elb.amazonaws.com")
+            .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowedHeaders("*");
     }
 
     private void disableHttpMethods(Class theClass, RepositoryRestConfiguration config, HttpMethod[] unsupportedActions) {
