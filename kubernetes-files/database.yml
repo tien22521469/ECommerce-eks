@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:8.0
+        image: 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/database:5
         env:
         # Cấu hình mật khẩu (Ở môi trường thật nên dùng Secret, demo thì để text)
         - name: MYSQL_ROOT_PASSWORD
