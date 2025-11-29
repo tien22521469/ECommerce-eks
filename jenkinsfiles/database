@@ -8,7 +8,7 @@ pipeline {
         IMAGE_NAME = "database"
         REPO_URL = "181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/database"
         YAML_FILE = "database.yaml"
-        DB_SCRIPTS_PATH = './database'
+        DB_SCRIPTS_PATH = './src/database'
     }
 
     stages {
