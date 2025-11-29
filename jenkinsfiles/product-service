@@ -7,7 +7,7 @@ pipeline {
         GIT_USER_NAME = "tien22521469"
         IMAGE_NAME = "product-service"
         REPO_URL = "181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/product-service"
-        YAML_FILE = "product-service.yaml"
+        YAML_FILE = "product-service.yml"
     }
 
     stages {
