@@ -1,19 +1,8 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql-pv-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi 
-  storageClassName: gp2 # Loại ổ cứng mặc định của AWS EKS
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql-db
+  namespace: dev
 spec:
   replicas: 1
   selector:
@@ -26,9 +15,12 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/database:5
+        # Image của bạn đã chứa sẵn SQL script
+        image: 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/database:5 
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3306
         env:
-        # Cấu hình mật khẩu (Ở môi trường thật nên dùng Secret, demo thì để text)
         - name: MYSQL_ROOT_PASSWORD
           value: "rootpassword"
         - name: MYSQL_DATABASE
@@ -37,31 +29,54 @@ spec:
           value: "ecommerceapp"
         - name: MYSQL_PASSWORD
           value: "StrongPa55WorD"
-        ports:
-        - containerPort: 3306
-          name: mysql
+        
+        # --- CẤU HÌNH TÀI NGUYÊN (QUAN TRỌNG) ---
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+        # --- TĂNG THỜI GIAN CHỜ (QUAN TRỌNG) ---
+        startupProbe:
+          tcpSocket:
+            port: 3306
+          failureThreshold: 30
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
         volumeMounts:
-        # 1. Mount ổ cứng thật vào nơi lưu data
-        - name: mysql-persistent-storage
+        # XÓA ConfigMap mount (để dùng SQL trong image)
+        # XÓA PVC mount (để dùng ổ cứng tạm, tránh lỗi Pending)
+        - name: mysql-local-storage
           mountPath: /var/lib/mysql
-        # 2. Mount script SQL vào thư mục init để nó tự chạy lần đầu
-        - name: mysql-init-scripts-vol
-          mountPath: /docker-entrypoint-initdb.d
+
       volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim # Trỏ vào file storage ở trên
-      - name: mysql-init-scripts-vol
-        configMap:
-          name: mysql-init-scripts # Lấy script từ ConfigMap (sẽ tạo ở Jenkins)
+      # Thay PersistentVolumeClaim bằng emptyDir (Ổ tạm)
+      - name: mysql-local-storage
+        emptyDir: {} 
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-db # Tên này phải trùng với tên trong code Spring Boot
+  name: mysql-db
+  namespace: dev
 spec:
-  ports:
-  - port: 3306
   selector:
     app: mysql-db
-  type: ClusterIP 
+  ports:
+    - port: 3306
+      targetPort: 3306
+  type: ClusterIP
