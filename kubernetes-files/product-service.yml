@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/product-service:2
+          image: 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/product-service:3
           imagePullPolicy: Always
           ports:
             - containerPort: 8082 
