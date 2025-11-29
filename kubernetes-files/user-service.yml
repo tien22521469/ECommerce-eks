@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+         
+          image: 242201296943.dkr.ecr.us-east-1.amazonaws.com/user-service:latest 
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081 
+          
+          # Cấu hình biến môi trường
+          env:
+            # 1. Đảm bảo Spring Boot chạy đúng port 8081
+            - name: SERVER_PORT
+              value: "8081"
+            
+            # 2. Kết nối Database (Chung DB với Product Service)
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql-db:3306/ecommerce_db?allowPublicKeyRetrieval=true&useSSL=false"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "ecommerceapp"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "StrongPa55WorD"
+
+          # Kiểm tra sức khỏe (Health Check)
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  type: LoadBalancer 
+  selector:
+    app: user-service
+  ports:
+    - name: http
+      port: 8081     
+      targetPort: 8081 
