@@ -15,7 +15,7 @@ spec:
       containers:
         - name: user-service
          
-          image: 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/user-service:latest 
+          image: 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/user-service:3
           imagePullPolicy: Always
           ports:
             - containerPort: 8081 
