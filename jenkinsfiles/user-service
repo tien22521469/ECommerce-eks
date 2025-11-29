@@ -26,7 +26,7 @@ pipeline {
         stage("Docker Image Build") {
             steps {
                 script {
-                    dir('src/adservice') {
+                    dir('src/user-service') {
                         sh 'docker system prune -f'
                         sh 'docker container prune -f'
                         sh 'docker build -t user-service .'
