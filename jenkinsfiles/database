@@ -7,7 +7,7 @@ pipeline {
         GIT_USER_NAME = "tien22521469"
         IMAGE_NAME = "database"
         REPO_URL = "181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/database"
-        YAML_FILE = "database.yaml"
+        YAML_FILE = "database.yml"
         DB_SCRIPTS_PATH = './src/database'
     }
 
