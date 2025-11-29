@@ -6,7 +6,7 @@ pipeline {
         GIT_EMAIL = "tiennguyenz2004@gmail.com"
         GIT_USER_NAME = "tien22521469"
         IMAGE_NAME = "user-service"
-        REPO_URL = "242201296943.dkr.ecr.us-east-1.amazonaws.com/user-service"
+        REPO_URL = "181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/user-service"
         YAML_FILE = "user-service.yaml"
     }
 
@@ -39,9 +39,9 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 242201296943.dkr.ecr.us-east-1.amazonaws.com
-                    docker tag user-service:latest 242201296943.dkr.ecr.us-east-1.amazonaws.com/adservice:${BUILD_NUMBER}
-                    docker push 242201296943.dkr.ecr.us-east-1.amazonaws.com/adservice:${BUILD_NUMBER}
+                    aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com
+                    docker tag user-service:latest 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/user-service:${BUILD_NUMBER}
+                    docker push 181040560981.dkr.ecr.ap-southeast-1.amazonaws.com/user-service:${BUILD_NUMBER}
                     '''
                 }
             }
